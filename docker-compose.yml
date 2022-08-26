@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  pws2mqtt:
+    env_file:
+      - pws2mqtt.env
+    build: .
+    ports:
+      - "8080:8080"
