@@ -15,8 +15,6 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          docker-password: $DOCKERHUB_PASSWORD
-          docker-username: $DOCKERHUB_USERNAME
           image: ryanm101/pws2mqtt
       #- docker/push:
       #    image: pws2mqtt 
@@ -26,6 +24,9 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
       - image: cimg/go:1.19.0
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
