@@ -16,7 +16,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - docker/build:
-          tag: latest
           image: pws2mqtt 
       #- docker/push:
       #    image: pws2mqtt 
