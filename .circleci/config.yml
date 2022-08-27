@@ -12,6 +12,7 @@ jobs:
       # replace with your preferred image
       - image: cimg/base:stable
     steps:
+      - checkout
       - docker/build:
           image: pws2mqtt 
       #- docker/push:
