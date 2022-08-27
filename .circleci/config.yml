@@ -35,17 +35,18 @@ jobs:
           command: |
             mkdir -p /tmp/test-reports
             gotestsum --junitfile /tmp/test-reports/unit-tests.xml
+      - store_test_results:
+          path: /tmp/test-reports
 
       - run:
           name: cross compile
           command: |
-            GOOS=linux GOARCH=amd64 go build -o dist/pws2mqtt_linux_amd64
-            GOOS=linux GOARCH=arm64 go build -o dist/pws2mqtt_linux_arm64
-            GOOS=windows GOARCH=amd64 go build -o dist/pws2mqtt_windows_amd64
-            GOOS=darwin GOARCH=amd64 go build -o dist/pws2mqtt_darwin_amd64
+            CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/pws2mqtt_linux_amd64 ./cmd/pws2mqtt
+            CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o dist/pws2mqtt_linux_arm64 ./cmd/pws2mqtt
+            CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/pws2mqtt_windows_amd64 ./cmd/pws2mqtt
+            CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/pws2mqtt_darwin_amd64 ./cmd/pws2mqtt
             cd dist/ && gzip *
-      - store_test_results:
-          path: /tmp/test-reports
+
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
