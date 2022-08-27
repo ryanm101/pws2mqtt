@@ -11,9 +11,10 @@ jobs:
     working_directory: ~/repo
     docker:
       # replace with your preferred image
-      - image: circleci/docker@1.7.0
+      - image: docker:17.05.0-ce-git
     steps:
       - checkout
+      - setup_remote_docker
       - docker/build:
           tag: latest
           image: pws2mqtt 
