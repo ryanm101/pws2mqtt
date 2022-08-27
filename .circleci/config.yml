@@ -11,10 +11,11 @@ jobs:
     working_directory: ~/repo
     docker:
       # replace with your preferred image
-      - image: cimg/base:stable
+      - image: circleci/docker@1.7.0
     steps:
       - checkout
       - docker/build:
+          tag: latest
           image: pws2mqtt 
       #- docker/push:
       #    image: pws2mqtt 
