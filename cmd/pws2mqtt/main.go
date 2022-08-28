@@ -99,7 +99,7 @@ func getEnv(key, fallback string) string {
 func main() {
 	listenIP := getEnv("IPADDR", "")
 	listenPort := getEnv("LISTENPORT", "8080")
-	mqttServer := getEnv("MQTTSERVER", "test.mosquitto.org")
+	mqttServer := getEnv("MQTTSERVER", "")
 	mqttPort := getEnv("MQTTPORT", "1883")
 	mqttUser := getEnv("MQTTUSER", "")
 	mqttPass := getEnv("MQTTPASS", "")
