@@ -1,5 +1,5 @@
 # PWS2MQTT
-[![ryanm101](https://circleci.com/gh/ryanm101/pws2mqtt.svg?style=svg)]()
+[![ryanm101](https://circleci.com/gh/ryanm101/pws2mqtt.svg?style=shield)]()
 
 Captures output from ecowitt personal weather station and replays the data into MQTT. 
 
