@@ -124,8 +124,9 @@ MQTTPASS=""
 * [ ] Send STATE data to MQTT
 * [ ] Helm Chart
 * [ ] HASSIO Add-on
-* [ ] Build binaries assets with CICD
+* [x] Build binaries assets with CICD
+* [x] upload  binaries assets with CICD
 * [ ] Upload to dockerhub
-* [ ] add DEBUG output
+* [x] add DEBUG output
 * [ ] Tests
 * [ ] Allow Topic change

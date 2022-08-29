@@ -4,24 +4,26 @@ import (
 	"fmt"
 	"github.com/eclipse/paho.mqtt.golang"
 	"github.com/mitchellh/mapstructure"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"time"
 )
 
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	fmt.Printf("Message %s received on topic %s\n", msg.Payload(), msg.Topic())
+	log.Debugf("Message %s received on topic %s\n", msg.Payload(), msg.Topic())
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-	fmt.Println("Connected")
+	log.Infof("MQTT Connected")
 }
 
 var connectionLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-	fmt.Printf("Connection Lost: %s\n", err.Error())
+	log.Errorf("MQTT Connection Lost: %s\n", err.Error())
 }
 
 func setupMQTT(broker string, user string, pass string) mqtt.Client {
+	log.Debug("setupMQTT")
 	options := mqtt.NewClientOptions()
 	options.Password = pass
 	options.Username = user
@@ -36,6 +38,7 @@ func setupMQTT(broker string, user string, pass string) mqtt.Client {
 
 func ecowittHandler(pwsdata Pwsdata, mqttclient mqtt.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Info("wundergroundHandler")
 		headerContentType := r.Header.Get("Content-Type")
 		if headerContentType != "application/x-www-form-urlencoded" {
 			w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -44,10 +47,11 @@ func ecowittHandler(pwsdata Pwsdata, mqttclient mqtt.Client) http.HandlerFunc {
 		r.ParseForm()
 		form := make(map[string]interface{})
 		for key, value := range r.Form {
-			//fmt.Printf("Key:%s, Value:%s\n", key, value[0])
+			log.Debugf("Key:%s, Value:%s\n", key, value[0])
 			form[key] = value[0]
 		}
 		mapstructure.Decode(form, &pwsdata)
+		log.Debug(pwsdata.ToJSON())
 		sendMQTTUpdate(mqttclient, pwsdata.ToJSON())
 		return
 	}
@@ -55,19 +59,22 @@ func ecowittHandler(pwsdata Pwsdata, mqttclient mqtt.Client) http.HandlerFunc {
 
 func wundergroundHandler(pwsdata Pwsdata, mqttclient mqtt.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Info("wundergroundHandler")
 		values := r.URL.Query()
 		form := make(map[string]interface{})
 		for key, value := range values {
-			//fmt.Printf("Key:%s, Value:%s\n", key, value[0])
+			log.Debugf("Key:%s, Value:%s\n", key, value[0])
 			form[key] = value[0]
 		}
 		mapstructure.Decode(form, &pwsdata)
+		log.Debug(pwsdata.ToJSON())
 		sendMQTTUpdate(mqttclient, pwsdata.ToJSON())
 		return
 	}
 }
 
 func sendMQTTUpdate(mqttclient mqtt.Client, data string) {
+	log.Debug("sendMQTTUpdate")
 	token := mqttclient.Connect()
 	if token.Wait() && token.Error() != nil {
 		panic(token.Error())
@@ -96,7 +103,27 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
+func init() {
+	// Log as JSON instead of the default ASCII formatter.
+	log.SetFormatter(&log.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+
+	// Only log the warning severity or above.
+	log.SetLevel(log.WarnLevel)
+}
+
 func main() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+
+	if getEnv("DEBUG", "") == "true" {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	listenIP := getEnv("IPADDR", "")
 	listenPort := getEnv("LISTENPORT", "8080")
 	mqttServer := getEnv("MQTTSERVER", "")
@@ -113,5 +140,6 @@ func main() {
 	http.Handle("/ecowitt", ecowittHandler(&edata, mqttclient))
 	http.Handle("/wunderground", wundergroundHandler(&wdata, mqttclient))
 
+	log.Infof("Listening On: %s:%s", listenIP, listenPort)
 	http.ListenAndServe(fmt.Sprintf("%s:%s", listenIP, listenPort), nil)
 }
