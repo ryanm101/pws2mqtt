@@ -10,11 +10,10 @@ Supports both ecowitt format or wunderground formats
 All settings are configured through Environment Variables. 
 
 Use the WSView app to set a custom endpoint:
-
-![Ecowitt](resouces/docimages/ecowitt.jpeg)
+<img src="resouces/docimages/ecowitt.jpeg" width="400" height="739">
 
 Note in the wunderground the `?`at the end of the endpoint this is required.
-![Wunderground](resouces/docimages/wunderground.jpeg)
+<img src="resouces/docimages/wunderground.jpeg" width="400" height="739">
 
 Then see below to either run in a docker container or natively.
 ```bash
