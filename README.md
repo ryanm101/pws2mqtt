@@ -10,6 +10,7 @@ Supports both ecowitt format or wunderground formats
 All settings are configured through Environment Variables. 
 
 Use the WSView app to set a custom endpoint:
+
 <img src="resouces/docimages/ecowitt.jpeg" width="400" height="739">
 
 Note in the wunderground the `?`at the end of the endpoint this is required.
